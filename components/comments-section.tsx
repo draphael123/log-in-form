@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
 
+const COMMENTS_PER_PAGE = 10;
+
 interface Comment {
   id: string;
   content: string;
@@ -157,8 +159,24 @@ export function CommentsSection({
   currentUserId,
   postOwnerId,
 }: CommentsSectionProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const totalPages = Math.ceil(comments.length / COMMENTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * COMMENTS_PER_PAGE;
+  const endIndex = startIndex + COMMENTS_PER_PAGE;
+  const paginatedComments = comments.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to comments section
+    document.getElementById("comments-section")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="rounded-2xl border-0 bg-gradient-to-br from-blue-50/80 via-purple-50/50 to-pink-50/80 dark:from-blue-900/20 dark:via-purple-900/10 dark:to-pink-900/20 p-6 shadow-xl shadow-blue-500/10">
+    <div 
+      id="comments-section"
+      className="rounded-2xl border-0 bg-gradient-to-br from-blue-50/80 via-purple-50/50 to-pink-50/80 dark:from-blue-900/20 dark:via-purple-900/10 dark:to-pink-900/20 p-6 shadow-xl shadow-blue-500/10"
+    >
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
           <span className="text-2xl">💬</span>
@@ -188,16 +206,93 @@ export function CommentsSection({
 
       {/* Comments list */}
       {comments.length > 0 ? (
-        <div className="space-y-3 stagger-children">
-          {comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              currentUserId={currentUserId}
-              postOwnerId={postOwnerId}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3 stagger-children">
+            {paginatedComments.map((comment) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                currentUserId={currentUserId}
+                postOwnerId={postOwnerId}
+              />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              {/* Previous button */}
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Previous page"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+
+              {/* Page numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  const showPage = 
+                    page === 1 || 
+                    page === totalPages || 
+                    Math.abs(page - currentPage) <= 1;
+                  
+                  // Show ellipsis
+                  const showEllipsisBefore = page === currentPage - 2 && currentPage > 3;
+                  const showEllipsisAfter = page === currentPage + 2 && currentPage < totalPages - 2;
+
+                  if (showEllipsisBefore || showEllipsisAfter) {
+                    return (
+                      <span key={page} className="px-2 text-muted-foreground">
+                        ...
+                      </span>
+                    );
+                  }
+
+                  if (!showPage) return null;
+
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-bold transition-all duration-300 ${
+                        currentPage === page
+                          ? "gradient-bg text-white shadow-lg shadow-purple-500/30"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Next button */}
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Next page"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Page info */}
+          {totalPages > 1 && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Page {currentPage} of {totalPages} • Showing {startIndex + 1}-{Math.min(endIndex, comments.length)} of {comments.length} comments
+            </p>
+          )}
+        </>
       ) : (
         <div className="text-center py-8">
           <span className="text-4xl mb-2 block">🗨️</span>
