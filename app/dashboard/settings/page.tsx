@@ -1,5 +1,6 @@
 import { getUserSettings } from "@/actions/settings.actions";
 import { SettingsForm } from "@/components/settings-form";
+import { EmailForm } from "@/components/email-form";
 import { PasswordForm } from "@/components/password-form";
 import { DangerZone } from "@/components/danger-zone";
 import Link from "next/link";
@@ -54,6 +55,9 @@ export default async function SettingsPage() {
 
       {/* Settings Form */}
       <SettingsForm settings={settings} />
+
+      {/* Email Form */}
+      <EmailForm currentEmail={settings.userEmail!} />
 
       {/* Password Form */}
       <PasswordForm />

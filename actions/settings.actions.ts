@@ -117,6 +117,84 @@ export async function updateSettings(
   };
 }
 
+export async function updateEmail(
+  prevState: SettingsState | null,
+  formData: FormData
+): Promise<SettingsState> {
+  const user = await requireAuth();
+  const bcrypt = await import("bcryptjs");
+
+  const newEmail = formData.get("newEmail") as string;
+  const password = formData.get("password") as string;
+
+  if (!newEmail || !password) {
+    return {
+      success: false,
+      message: "Email and password are required",
+    };
+  }
+
+  // Validate email format
+  const emailSchema = z.string().email("Please enter a valid email address");
+  const emailResult = emailSchema.safeParse(newEmail);
+
+  if (!emailResult.success) {
+    return {
+      success: false,
+      message: "Please enter a valid email address",
+    };
+  }
+
+  const normalizedEmail = newEmail.toLowerCase();
+
+  // Check if email is already in use
+  const existingUser = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (existingUser && existingUser.id !== user.id) {
+    return {
+      success: false,
+      message: "This email is already in use by another account",
+    };
+  }
+
+  // Verify password
+  const userData = await prisma.user.findUnique({
+    where: { id: user.id },
+  });
+
+  if (!userData) {
+    return {
+      success: false,
+      message: "User not found",
+    };
+  }
+
+  const isValid = await bcrypt.compare(password, userData.passwordHash);
+
+  if (!isValid) {
+    return {
+      success: false,
+      message: "Password is incorrect",
+    };
+  }
+
+  // Update email
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { email: normalizedEmail },
+  });
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard");
+
+  return {
+    success: true,
+    message: "Email updated successfully!",
+  };
+}
+
 export async function updatePassword(
   prevState: SettingsState | null,
   formData: FormData
