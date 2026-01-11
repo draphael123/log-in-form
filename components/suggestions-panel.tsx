@@ -10,6 +10,7 @@ interface SuggestionsPanelProps {
   };
 }
 
+const suggestionEmojis = ["💡", "🎯", "⚡", "🔥", "✨"];
 const gradientColors = [
   "from-blue-500 to-cyan-500",
   "from-purple-500 to-pink-500",
@@ -22,40 +23,34 @@ export function SuggestionsPanel({ entry }: SuggestionsPanelProps) {
   const suggestions = getSuggestions(entry);
 
   return (
-    <div className="rounded-2xl border border-purple-200/50 dark:border-purple-800/50 bg-gradient-to-br from-purple-50/80 via-pink-50/50 to-blue-50/80 dark:from-purple-900/20 dark:via-pink-900/10 dark:to-blue-900/20 p-6 backdrop-blur-sm">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-lg shadow-purple-500/30">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
+    <div className="rounded-2xl border-0 bg-gradient-to-br from-purple-50/80 via-pink-50/50 to-blue-50/80 dark:from-purple-900/20 dark:via-pink-900/10 dark:to-blue-900/20 p-6 shadow-xl shadow-purple-500/10">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shadow-lg shadow-purple-500/30 pulse-glow">
+          <span className="text-2xl">🧠</span>
         </div>
-        <h3 className="font-bold text-lg gradient-text">Smart Suggestions</h3>
+        <div>
+          <h3 className="font-black text-lg gradient-text">Smart Suggestions</h3>
+          <p className="text-sm text-muted-foreground">AI-powered tips just for you! ✨</p>
+        </div>
       </div>
-      <ul className="space-y-3">
+      <ul className="space-y-3 stagger-children">
         {suggestions.map((suggestion, index) => (
           <li
             key={index}
-            className="flex items-start gap-3 p-3 rounded-xl bg-white/60 dark:bg-gray-800/40 border border-white/50 dark:border-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-800/60 transition-colors"
+            className="group flex items-start gap-3 p-4 rounded-xl bg-white/70 dark:bg-gray-800/50 border border-white/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800/70 hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-0.5 transition-all duration-300 cursor-default"
           >
-            <span className={`flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br ${gradientColors[index % gradientColors.length]} text-white text-xs flex items-center justify-center font-bold shadow-lg`}>
-              {index + 1}
+            <span className={`flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br ${gradientColors[index % gradientColors.length]} text-white flex items-center justify-center font-bold shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+              {suggestionEmojis[index % suggestionEmojis.length]}
             </span>
-            <span className="text-sm text-foreground/80 leading-relaxed">{suggestion}</span>
+            <span className="text-sm text-foreground/80 leading-relaxed group-hover:text-foreground transition-colors">{suggestion}</span>
           </li>
         ))}
       </ul>
+      <div className="mt-4 text-center">
+        <span className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+          Pro tip: Apply these suggestions to level up! 🚀
+        </span>
+      </div>
     </div>
   );
 }

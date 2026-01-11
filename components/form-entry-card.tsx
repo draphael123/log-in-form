@@ -12,13 +12,13 @@ interface FormEntryCardProps {
   };
 }
 
-const categoryColors: Record<string, string> = {
-  productivity: "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-500/30",
-  health: "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-emerald-500/30",
-  admin: "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-purple-500/30",
-  "customer support": "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-amber-500/30",
-  engineering: "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-500/30",
-  general: "bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-gray-500/30",
+const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
+  productivity: { gradient: "from-blue-500 to-cyan-500", emoji: "⚡" },
+  health: { gradient: "from-emerald-500 to-teal-500", emoji: "💚" },
+  admin: { gradient: "from-purple-500 to-violet-500", emoji: "📋" },
+  "customer support": { gradient: "from-amber-500 to-orange-500", emoji: "💬" },
+  engineering: { gradient: "from-red-500 to-rose-500", emoji: "⚙️" },
+  general: { gradient: "from-gray-500 to-slate-500", emoji: "📌" },
 };
 
 export function FormEntryCard({ entry }: FormEntryCardProps) {
@@ -30,37 +30,36 @@ export function FormEntryCard({ entry }: FormEntryCardProps) {
     }).format(new Date(date));
   };
 
-  const categoryClass = categoryColors[entry.category.toLowerCase()] || categoryColors.general;
+  const config = categoryConfig[entry.category.toLowerCase()] || categoryConfig.general;
 
   return (
     <Link href={`/dashboard/${entry.id}`}>
-      <Card className="group hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-300 cursor-pointer overflow-hidden bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+      <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl hover:shadow-purple-500/20 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] cursor-pointer">
+        <div className={`h-1 bg-gradient-to-r ${config.gradient} opacity-70 group-hover:opacity-100 transition-opacity`} />
         <CardContent className="p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-foreground truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              <h3 className="font-bold text-foreground truncate group-hover:gradient-text transition-all duration-300 flex items-center gap-2">
                 {entry.title}
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity text-sm">→</span>
               </h3>
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {entry.description}
               </p>
             </div>
-            <span className={`flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${categoryClass}`}>
+            <span className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${config.gradient} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+              <span>{config.emoji}</span>
               {entry.category}
             </span>
           </div>
           <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              Created {formatDate(entry.createdAt)}
+            <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-full">
+              <span>📅</span>
+              {formatDate(entry.createdAt)}
             </span>
             {entry.updatedAt > entry.createdAt && (
-              <span className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                </svg>
+              <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-full">
+                <span>✏️</span>
                 Updated {formatDate(entry.updatedAt)}
               </span>
             )}
