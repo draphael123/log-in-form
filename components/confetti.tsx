@@ -42,7 +42,6 @@ export function useConfetti() {
   }, []);
 
   const fireEmoji = useCallback(() => {
-    const emojis = ['🎉', '✨', '🎊', '💜', '⭐'];
     const defaults = {
       spread: 360,
       ticks: 100,
@@ -55,23 +54,11 @@ export function useConfetti() {
     function shoot() {
       confetti({
         ...defaults,
-        particleCount: 30,
+        particleCount: 40,
         scalar: 1.2,
         shapes: ['circle', 'square'],
         colors: ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899'],
       });
-
-      confetti({
-        ...defaults,
-        particleCount: 10,
-        scalar: 2,
-        shapes: ['text'],
-        shapeOptions: {
-          text: {
-            value: emojis,
-          },
-        },
-      } as confetti.Options);
     }
 
     setTimeout(shoot, 0);
@@ -114,4 +101,3 @@ export function SuccessAnimation() {
     </div>
   );
 }
-
