@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,15 @@ import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
 import { CATEGORIES } from "@/lib/suggestions";
 import { createFormEntry, updateFormEntry, FormState } from "@/actions/form.actions";
+
+function SubmitButton({ mode }: { mode: "create" | "edit" }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" isLoading={pending}>
+      {mode === "create" ? "Create Entry" : "Save Changes"}
+    </Button>
+  );
+}
 
 interface FormEntryFormProps {
   mode: "create" | "edit";
@@ -33,7 +43,7 @@ export function FormEntryForm({
     ? updateFormEntry.bind(null, entryId)
     : createFormEntry;
 
-  const [state, formAction, isPending] = useActionState<FormState | null, FormData>(
+  const [state, formAction] = useFormState<FormState | null, FormData>(
     action,
     null
   );
@@ -92,9 +102,7 @@ export function FormEntryForm({
       />
 
       <div className="flex items-center gap-4">
-        <Button type="submit" isLoading={isPending}>
-          {mode === "create" ? "Create Entry" : "Save Changes"}
-        </Button>
+        <SubmitButton mode={mode} />
         <Button
           type="button"
           variant="secondary"

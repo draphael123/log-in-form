@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { register, AuthState } from "@/actions/auth.actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,8 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" isLoading={pending}>
+      Create Account
+    </Button>
+  );
+}
+
 export default function RegisterPage() {
-  const [state, formAction, isPending] = useActionState<AuthState | null, FormData>(
+  const [state, formAction] = useFormState<AuthState | null, FormData>(
     register,
     null
   );
@@ -78,9 +87,7 @@ export default function RegisterPage() {
             required
           />
 
-          <Button type="submit" className="w-full" isLoading={isPending}>
-            Create Account
-          </Button>
+          <SubmitButton />
         </form>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
