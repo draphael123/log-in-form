@@ -14,7 +14,7 @@ const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
 };
 
 interface FeedPageProps {
-  searchParams: Promise<{ category?: string; search?: string }>;
+  searchParams: Promise<{ category?: string; search?: string; date?: string }>;
 }
 
 export default async function FeedPage({ searchParams }: FeedPageProps) {
@@ -30,6 +30,38 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
     entries = entries.filter(
       (e) => e.category.toLowerCase() === resolvedSearchParams.category?.toLowerCase()
     );
+  }
+
+  // Filter by date
+  if (resolvedSearchParams.date && resolvedSearchParams.date !== "all") {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    entries = entries.filter((e) => {
+      const entryDate = new Date(e.createdAt);
+      
+      switch (resolvedSearchParams.date) {
+        case "today":
+          return entryDate >= today;
+        case "week": {
+          const weekAgo = new Date(today);
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return entryDate >= weekAgo;
+        }
+        case "month": {
+          const monthAgo = new Date(today);
+          monthAgo.setMonth(monthAgo.getMonth() - 1);
+          return entryDate >= monthAgo;
+        }
+        case "year": {
+          const yearAgo = new Date(today);
+          yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+          return entryDate >= yearAgo;
+        }
+        default:
+          return true;
+      }
+    });
   }
 
   // Filter by search term
@@ -85,6 +117,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       <FeedFilters 
         categories={categories} 
         selectedCategory={resolvedSearchParams.category || "all"}
+        selectedDate={resolvedSearchParams.date || "all"}
         searchQuery={resolvedSearchParams.search || ""}
         totalEntries={allEntries.length}
         filteredCount={entries.length}
@@ -117,12 +150,22 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       </div>
 
       {/* Results info */}
-      {(resolvedSearchParams.category && resolvedSearchParams.category !== "all") || resolvedSearchParams.search ? (
+      {(resolvedSearchParams.category && resolvedSearchParams.category !== "all") || 
+       (resolvedSearchParams.date && resolvedSearchParams.date !== "all") || 
+       resolvedSearchParams.search ? (
         <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border">
           <p className="text-sm text-muted-foreground">
             Showing <span className="font-bold text-foreground">{entries.length}</span> of {allEntries.length} entries
             {resolvedSearchParams.category && resolvedSearchParams.category !== "all" && (
               <span> in <span className="font-bold text-foreground">{resolvedSearchParams.category}</span></span>
+            )}
+            {resolvedSearchParams.date && resolvedSearchParams.date !== "all" && (
+              <span> from <span className="font-bold text-foreground">
+                {resolvedSearchParams.date === "today" ? "today" : 
+                 resolvedSearchParams.date === "week" ? "this week" :
+                 resolvedSearchParams.date === "month" ? "this month" : 
+                 resolvedSearchParams.date === "year" ? "this year" : resolvedSearchParams.date}
+              </span></span>
             )}
             {resolvedSearchParams.search && (
               <span> matching &quot;<span className="font-bold text-foreground">{resolvedSearchParams.search}</span>&quot;</span>
@@ -145,11 +188,11 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
           </div>
           <h2 className="text-xl font-black gradient-text mb-2">No entries found</h2>
           <p className="text-muted-foreground mb-4">
-            {resolvedSearchParams.search || resolvedSearchParams.category !== "all"
+            {resolvedSearchParams.search || resolvedSearchParams.category !== "all" || resolvedSearchParams.date !== "all"
               ? "Try adjusting your filters or search query"
               : "Be the first to create an entry!"}
           </p>
-          {resolvedSearchParams.search || resolvedSearchParams.category !== "all" ? (
+          {resolvedSearchParams.search || resolvedSearchParams.category !== "all" || resolvedSearchParams.date !== "all" ? (
             <Link 
               href="/dashboard/feed"
               className="inline-flex items-center justify-center rounded-xl border-2 border-purple-200 dark:border-purple-800 text-foreground px-4 py-2 text-sm font-bold hover:border-purple-400 hover:scale-105 transition-all duration-300"

@@ -12,9 +12,18 @@ const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
   general: { gradient: "from-gray-500 to-slate-500", emoji: "📌" },
 };
 
+const dateFilters = [
+  { value: "all", label: "All Time", emoji: "🌐" },
+  { value: "today", label: "Today", emoji: "📅" },
+  { value: "week", label: "This Week", emoji: "📆" },
+  { value: "month", label: "This Month", emoji: "🗓️" },
+  { value: "year", label: "This Year", emoji: "📊" },
+];
+
 interface FeedFiltersProps {
   categories: string[];
   selectedCategory: string;
+  selectedDate: string;
   searchQuery: string;
   totalEntries: number;
   filteredCount: number;
@@ -23,6 +32,7 @@ interface FeedFiltersProps {
 export function FeedFilters({
   categories,
   selectedCategory,
+  selectedDate,
   searchQuery,
   totalEntries,
   filteredCount,
@@ -32,7 +42,7 @@ export function FeedFilters({
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState(searchQuery);
 
-  const updateFilters = (category?: string, searchTerm?: string) => {
+  const updateFilters = (category?: string, date?: string, searchTerm?: string) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (category !== undefined) {
@@ -40,6 +50,14 @@ export function FeedFilters({
         params.delete("category");
       } else {
         params.set("category", category);
+      }
+    }
+
+    if (date !== undefined) {
+      if (date === "all") {
+        params.delete("date");
+      } else {
+        params.set("date", date);
       }
     }
     
@@ -58,7 +76,7 @@ export function FeedFilters({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    updateFilters(undefined, search);
+    updateFilters(undefined, undefined, search);
   };
 
   return (
@@ -92,7 +110,7 @@ export function FeedFilters({
         <div className="flex flex-wrap gap-2">
           {/* All button */}
           <button
-            onClick={() => updateFilters("all")}
+            onClick={() => updateFilters("all", undefined, undefined)}
             disabled={isPending}
             className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 ${
               selectedCategory === "all"
@@ -115,7 +133,7 @@ export function FeedFilters({
             return (
               <button
                 key={category}
-                onClick={() => updateFilters(category)}
+                onClick={() => updateFilters(category, undefined, undefined)}
                 disabled={isPending}
                 className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 ${
                   isSelected
@@ -125,6 +143,32 @@ export function FeedFilters({
               >
                 <span>{config.emoji}</span>
                 {category}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Date filters */}
+      <div>
+        <p className="text-sm font-medium text-muted-foreground mb-3">Filter by date:</p>
+        <div className="flex flex-wrap gap-2">
+          {dateFilters.map((filter) => {
+            const isSelected = selectedDate === filter.value;
+            
+            return (
+              <button
+                key={filter.value}
+                onClick={() => updateFilters(undefined, filter.value, undefined)}
+                disabled={isPending}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 ${
+                  isSelected
+                    ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg shadow-indigo-500/30"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <span>{filter.emoji}</span>
+                {filter.label}
               </button>
             );
           })}
