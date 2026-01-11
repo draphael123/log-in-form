@@ -20,17 +20,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-lg";
+      "inline-flex items-center justify-center font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-xl";
 
     const variants = {
       primary:
-        "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary",
+        "gradient-bg text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] focus-visible:ring-purple-500",
       secondary:
-        "bg-muted text-foreground hover:bg-muted/80 focus-visible:ring-muted",
+        "bg-muted/50 text-foreground border border-border hover:bg-muted hover:border-purple-300 dark:hover:border-purple-700 focus-visible:ring-purple-500",
       destructive:
-        "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive",
+        "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:scale-[1.02] focus-visible:ring-red-500",
       ghost:
-        "hover:bg-muted text-foreground focus-visible:ring-muted",
+        "hover:bg-muted/50 text-muted-foreground hover:text-foreground focus-visible:ring-purple-500",
     };
 
     const sizes = {
@@ -79,4 +79,3 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = "Button";
-
