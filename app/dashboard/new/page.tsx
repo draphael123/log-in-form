@@ -41,7 +41,7 @@ export default function NewEntryPage() {
               <SuccessAnimation />
             </div>
             <CardTitle className="text-2xl gradient-text-animated">
-              🎉 Entry Created!
+              🎉 Post Created!
             </CardTitle>
             <CardDescription className="text-base">
               &quot;{createdEntry.title}&quot; has been saved successfully
@@ -55,7 +55,7 @@ export default function NewEntryPage() {
                 onClick={() => router.push(`/dashboard/${createdEntry.id}`)}
                 className="inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
               >
-                <span className="mr-2">👀</span> View Entry
+                <span className="mr-2">👀</span> View Post
               </button>
               <button
                 onClick={() => setCreatedEntry(null)}
@@ -86,7 +86,7 @@ export default function NewEntryPage() {
               <span className="text-2xl">✏️</span>
             </div>
             <div>
-              <CardTitle className="text-xl">Create New Entry</CardTitle>
+              <CardTitle className="text-xl">Create New Post</CardTitle>
               <CardDescription>
                 Fill in the details and get smart suggestions! 💡
               </CardDescription>

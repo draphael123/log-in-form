@@ -24,7 +24,7 @@ export default async function HomePage() {
             <span className="text-5xl">📋</span>
           </div>
           <h1 className="text-5xl font-black tracking-tight gradient-text-animated">
-            FormFlow
+            ForumFlow
           </h1>
           <p className="text-xl text-muted-foreground">
             A <span className="text-purple-500 font-bold">fun</span> way to manage your entries with{" "}
@@ -78,7 +78,7 @@ export default async function HomePage() {
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-purple-500/40 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300">
               <span className="text-2xl">📝</span>
             </div>
-            <h3 className="font-bold text-purple-900 dark:text-purple-100">Easy Forms</h3>
+            <h3 className="font-bold text-purple-900 dark:text-purple-100">Easy Forums</h3>
             <p className="text-sm text-purple-700/70 dark:text-purple-300/70 mt-1">
               Create, edit, done! ✅
             </p>

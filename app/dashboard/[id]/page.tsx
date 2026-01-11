@@ -61,7 +61,7 @@ export default async function EntryPage({ params, searchParams }: EntryPageProps
           <div className="h-1 animated-gradient" />
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span>✏️</span> Edit Entry
+              <span>✏️</span> Edit Post
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -157,7 +157,7 @@ export default async function EntryPage({ params, searchParams }: EntryPageProps
               {!isOwner && (
                 <div className="pt-4 border-t border-border">
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>👀</span> You&apos;re viewing someone else&apos;s entry
+                    <span>👀</span> You&apos;re viewing someone else&apos;s post
                   </p>
                 </div>
               )}

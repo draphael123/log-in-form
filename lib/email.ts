@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = process.env.FROM_EMAIL || "FormFlow <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.FROM_EMAIL || "ForumFlow <onboarding@resend.dev>";
 const APP_URL = process.env.NEXTAUTH_URL || "https://formflow-app-gamma.vercel.app";
 
 export async function sendWelcomeEmail({
@@ -61,7 +61,7 @@ export async function sendWelcomeEmail({
               <ul style="margin: 0 0 24px; padding-left: 0; list-style: none; color: #44403c;">
                 <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
                   <span style="position: absolute; left: 0;">✅</span>
-                  Create and organize form entries
+                  Create and organize forum posts
                 </li>
                 <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
                   <span style="position: absolute; left: 0;">💡</span>
@@ -69,7 +69,7 @@ export async function sendWelcomeEmail({
                 </li>
                 <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
                   <span style="position: absolute; left: 0;">⚡</span>
-                  Edit and manage entries anytime
+                  Edit and manage posts anytime
                 </li>
                 <li style="margin-bottom: 12px; padding-left: 28px; position: relative;">
                   <span style="position: absolute; left: 0;">🎨</span>
@@ -120,9 +120,9 @@ Hey ${firstName}! 👋
 Thanks for signing up! You're now part of our awesome community. 🚀
 
 Here's what you can do:
-✅ Create and organize form entries
+✅ Create and organize forum posts
 💡 Get smart suggestions based on your content
-⚡ Edit and manage entries anytime
+⚡ Edit and manage posts anytime
 🎨 Customize your experience in settings
 
 Go to your dashboard: ${process.env.NEXTAUTH_URL || "https://formflow-app-gamma.vercel.app"}/dashboard

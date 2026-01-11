@@ -38,7 +38,7 @@ export default async function DashboardLayout({
                     <polyline points="14 2 14 8 20 8" />
                   </svg>
                 </div>
-                <span className="font-bold text-lg gradient-text">FormFlow</span>
+                <span className="font-bold text-lg gradient-text">ForumFlow</span>
               </Link>
 
               {/* Navigation */}
@@ -47,7 +47,7 @@ export default async function DashboardLayout({
                   href="/dashboard"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
                 >
-                  My Entries
+                  My Posts
                 </Link>
                 <Link
                   href="/dashboard/feed"

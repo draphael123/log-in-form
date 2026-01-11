@@ -127,7 +127,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 stagger-children">
         <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200/50 dark:border-blue-700/30 hover-lift">
           <div className="text-3xl font-black text-blue-600 dark:text-blue-400">{allEntries.length}</div>
-          <div className="text-sm text-muted-foreground">Total Entries</div>
+          <div className="text-sm text-muted-foreground">Total Posts</div>
         </div>
         <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200/50 dark:border-purple-700/30 hover-lift">
           <div className="text-3xl font-black text-purple-600 dark:text-purple-400">
@@ -139,7 +139,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
           <div className="text-3xl font-black text-amber-600 dark:text-amber-400">
             {allEntries.filter(e => e.userId === session?.user?.id).length}
           </div>
-          <div className="text-sm text-muted-foreground">Your Entries</div>
+          <div className="text-sm text-muted-foreground">Your Posts</div>
         </div>
         <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30 hover-lift">
           <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
@@ -155,7 +155,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
        resolvedSearchParams.search ? (
         <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-bold text-foreground">{entries.length}</span> of {allEntries.length} entries
+            Showing <span className="font-bold text-foreground">{entries.length}</span> of {allEntries.length} posts
             {resolvedSearchParams.category && resolvedSearchParams.category !== "all" && (
               <span> in <span className="font-bold text-foreground">{resolvedSearchParams.category}</span></span>
             )}
@@ -186,11 +186,11 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 mb-4">
             <span className="text-4xl">🔍</span>
           </div>
-          <h2 className="text-xl font-black gradient-text mb-2">No entries found</h2>
+          <h2 className="text-xl font-black gradient-text mb-2">No posts found</h2>
           <p className="text-muted-foreground mb-4">
             {resolvedSearchParams.search || resolvedSearchParams.category !== "all" || resolvedSearchParams.date !== "all"
               ? "Try adjusting your filters or search query"
-              : "Be the first to create an entry!"}
+              : "Be the first to create a post!"}
           </p>
           {resolvedSearchParams.search || resolvedSearchParams.category !== "all" || resolvedSearchParams.date !== "all" ? (
             <Link 
@@ -204,7 +204,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
               href="/dashboard/new"
               className="inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
             >
-              <span className="mr-2">✨</span> Create First Entry
+              <span className="mr-2">✨</span> Create First Post
             </Link>
           )}
         </div>

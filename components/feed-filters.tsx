@@ -91,7 +91,7 @@ export function FeedFilters({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search entries by title, description, or author..."
+            placeholder="Search posts by title, description, or author..."
             className="w-full pl-12 pr-24 py-3 rounded-xl border-2 border-border bg-white dark:bg-gray-900 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
           />
           <button
@@ -106,7 +106,7 @@ export function FeedFilters({
 
       {/* Category filters */}
       <div>
-        <p className="text-sm font-medium text-muted-foreground mb-3">Filter by category:</p>
+        <p className="text-sm font-medium text-muted-foreground mb-3">Filter by topic:</p>
         <div className="flex flex-wrap gap-2">
           {/* All button */}
           <button
