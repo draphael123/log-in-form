@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllFormEntries } from "@/actions/form.actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import { FeedFilters } from "@/components/feed-filters";
 
 const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
   productivity: { gradient: "from-blue-500 to-cyan-500", emoji: "⚡" },
@@ -12,9 +13,39 @@ const categoryConfig: Record<string, { gradient: string; emoji: string }> = {
   general: { gradient: "from-gray-500 to-slate-500", emoji: "📌" },
 };
 
-export default async function FeedPage() {
+interface FeedPageProps {
+  searchParams: Promise<{ category?: string; search?: string }>;
+}
+
+export default async function FeedPage({ searchParams }: FeedPageProps) {
+  const resolvedSearchParams = await searchParams;
   const session = await auth();
-  const entries = await getAllFormEntries();
+  const allEntries = await getAllFormEntries();
+
+  // Apply filters
+  let entries = allEntries;
+  
+  // Filter by category
+  if (resolvedSearchParams.category && resolvedSearchParams.category !== "all") {
+    entries = entries.filter(
+      (e) => e.category.toLowerCase() === resolvedSearchParams.category?.toLowerCase()
+    );
+  }
+
+  // Filter by search term
+  if (resolvedSearchParams.search) {
+    const searchLower = resolvedSearchParams.search.toLowerCase();
+    entries = entries.filter(
+      (e) =>
+        e.title.toLowerCase().includes(searchLower) ||
+        e.description.toLowerCase().includes(searchLower) ||
+        e.user.name?.toLowerCase().includes(searchLower) ||
+        e.user.email.toLowerCase().includes(searchLower)
+    );
+  }
+
+  // Get unique categories from all entries
+  const categories = Array.from(new Set(allEntries.map((e) => e.category)));
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -32,7 +63,7 @@ export default async function FeedPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="slide-up">
         <div className="flex items-center gap-3 mb-2">
@@ -50,48 +81,89 @@ export default async function FeedPage() {
         </div>
       </div>
 
+      {/* Filters */}
+      <FeedFilters 
+        categories={categories} 
+        selectedCategory={resolvedSearchParams.category || "all"}
+        searchQuery={resolvedSearchParams.search || ""}
+        totalEntries={allEntries.length}
+        filteredCount={entries.length}
+      />
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 stagger-children">
-        <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200/50 dark:border-blue-700/30">
-          <div className="text-3xl font-black text-blue-600 dark:text-blue-400">{entries.length}</div>
+        <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200/50 dark:border-blue-700/30 hover-lift">
+          <div className="text-3xl font-black text-blue-600 dark:text-blue-400">{allEntries.length}</div>
           <div className="text-sm text-muted-foreground">Total Entries</div>
         </div>
-        <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200/50 dark:border-purple-700/30">
+        <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200/50 dark:border-purple-700/30 hover-lift">
           <div className="text-3xl font-black text-purple-600 dark:text-purple-400">
-            {new Set(entries.map(e => e.userId)).size}
+            {new Set(allEntries.map(e => e.userId)).size}
           </div>
           <div className="text-sm text-muted-foreground">Contributors</div>
         </div>
-        <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/50 dark:border-amber-700/30">
+        <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/50 dark:border-amber-700/30 hover-lift">
           <div className="text-3xl font-black text-amber-600 dark:text-amber-400">
-            {entries.filter(e => e.userId === session?.user?.id).length}
+            {allEntries.filter(e => e.userId === session?.user?.id).length}
           </div>
           <div className="text-sm text-muted-foreground">Your Entries</div>
         </div>
-        <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30">
+        <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30 hover-lift">
           <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-            {new Set(entries.map(e => e.category)).size}
+            {categories.length}
           </div>
           <div className="text-sm text-muted-foreground">Categories</div>
         </div>
       </div>
 
-      {/* Entries list */}
-      {entries.length === 0 ? (
-        <div className="text-center py-20 px-4 bounce-in">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 mb-6">
-            <span className="text-5xl">🌱</span>
-          </div>
-          <h2 className="text-2xl font-black gradient-text mb-2">No entries yet!</h2>
-          <p className="text-muted-foreground mb-6">
-            Be the first to create an entry and share with the community!
+      {/* Results info */}
+      {(resolvedSearchParams.category && resolvedSearchParams.category !== "all") || resolvedSearchParams.search ? (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border">
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-bold text-foreground">{entries.length}</span> of {allEntries.length} entries
+            {resolvedSearchParams.category && resolvedSearchParams.category !== "all" && (
+              <span> in <span className="font-bold text-foreground">{resolvedSearchParams.category}</span></span>
+            )}
+            {resolvedSearchParams.search && (
+              <span> matching &quot;<span className="font-bold text-foreground">{resolvedSearchParams.search}</span>&quot;</span>
+            )}
           </p>
           <Link 
-            href="/dashboard/new"
-            className="inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
+            href="/dashboard/feed"
+            className="text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
           >
-            <span className="mr-2">✨</span> Create First Entry
+            Clear filters
           </Link>
+        </div>
+      ) : null}
+
+      {/* Entries list */}
+      {entries.length === 0 ? (
+        <div className="text-center py-16 px-4 bounce-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 mb-4">
+            <span className="text-4xl">🔍</span>
+          </div>
+          <h2 className="text-xl font-black gradient-text mb-2">No entries found</h2>
+          <p className="text-muted-foreground mb-4">
+            {resolvedSearchParams.search || resolvedSearchParams.category !== "all"
+              ? "Try adjusting your filters or search query"
+              : "Be the first to create an entry!"}
+          </p>
+          {resolvedSearchParams.search || resolvedSearchParams.category !== "all" ? (
+            <Link 
+              href="/dashboard/feed"
+              className="inline-flex items-center justify-center rounded-xl border-2 border-purple-200 dark:border-purple-800 text-foreground px-4 py-2 text-sm font-bold hover:border-purple-400 hover:scale-105 transition-all duration-300"
+            >
+              <span className="mr-2">✨</span> Clear Filters
+            </Link>
+          ) : (
+            <Link 
+              href="/dashboard/new"
+              className="inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
+            >
+              <span className="mr-2">✨</span> Create First Entry
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 stagger-children">
@@ -147,4 +219,3 @@ export default async function FeedPage() {
     </div>
   );
 }
-
