@@ -11,7 +11,7 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between slide-up">
         <div>
           <h1 className="text-3xl font-black gradient-text-animated flex items-center gap-3">
-            Your Entries
+            My Entries
             <span className="text-2xl float">📚</span>
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -21,27 +21,35 @@ export default async function DashboardPage() {
             }
           </p>
         </div>
-        <Link 
-          href="/dashboard/new"
-          className="group inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-110 transition-all duration-300"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-2 group-hover:rotate-90 transition-transform duration-300"
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/dashboard/feed"
+            className="inline-flex items-center justify-center rounded-xl border-2 border-purple-200 dark:border-purple-800 text-foreground px-4 py-2.5 text-sm font-bold hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:scale-105 transition-all duration-300"
           >
-            <line x1="12" x2="12" y1="5" y2="19" />
-            <line x1="5" x2="19" y1="12" y2="12" />
-          </svg>
-          New Entry
-        </Link>
+            <span className="mr-2">🌍</span> Public Feed
+          </Link>
+          <Link 
+            href="/dashboard/new"
+            className="group inline-flex items-center justify-center rounded-xl gradient-bg text-white px-6 py-3 text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-110 transition-all duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2 group-hover:rotate-90 transition-transform duration-300"
+            >
+              <line x1="12" x2="12" y1="5" y2="19" />
+              <line x1="5" x2="19" y1="12" y2="12" />
+            </svg>
+            New Entry
+          </Link>
+        </div>
       </div>
 
       {/* Entries list */}

@@ -47,7 +47,13 @@ export default async function DashboardLayout({
                   href="/dashboard"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
                 >
-                  Entries
+                  My Entries
+                </Link>
+                <Link
+                  href="/dashboard/feed"
+                  className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <span>🌍</span> Public Feed
                 </Link>
                 <Link
                   href="/dashboard/settings"

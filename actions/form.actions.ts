@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth";
+import { requireAuth, getCurrentUser } from "@/lib/auth";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -61,6 +61,7 @@ export async function createFormEntry(
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/feed");
   
   return {
     success: true,
@@ -121,6 +122,7 @@ export async function updateFormEntry(
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/feed");
   revalidatePath(`/dashboard/${entryId}`);
 
   return {
@@ -156,19 +158,26 @@ export async function deleteFormEntry(entryId: string): Promise<FormState> {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/feed");
   redirect("/dashboard");
 }
 
 export async function getFormEntry(entryId: string) {
-  const user = await requireAuth();
+  await requireAuth();
 
+  // Any logged-in user can view any entry
   const entry = await prisma.formEntry.findUnique({
     where: { id: entryId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
-
-  if (!entry || entry.userId !== user.id) {
-    return null;
-  }
 
   return entry;
 }
@@ -184,3 +193,35 @@ export async function getUserFormEntries() {
   return entries;
 }
 
+// Get all entries from all users (public feed)
+export async function getAllFormEntries() {
+  await requireAuth();
+
+  const entries = await prisma.formEntry.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return entries;
+}
+
+// Check if current user owns an entry
+export async function isEntryOwner(entryId: string) {
+  const user = await getCurrentUser();
+  if (!user) return false;
+
+  const entry = await prisma.formEntry.findUnique({
+    where: { id: entryId },
+    select: { userId: true },
+  });
+
+  return entry?.userId === user.id;
+}
