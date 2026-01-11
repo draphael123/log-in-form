@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getFormEntry, isEntryOwner } from "@/actions/form.actions";
+import { getComments } from "@/actions/comment.actions";
+import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SuggestionsPanel } from "@/components/suggestions-panel";
 import { FormEntryForm } from "@/components/form-entry-form";
 import { DeleteEntryButton } from "@/components/delete-entry-button";
+import { CommentsSection } from "@/components/comments-section";
 
 interface EntryPageProps {
   params: Promise<{ id: string }>;
@@ -14,7 +17,11 @@ interface EntryPageProps {
 export default async function EntryPage({ params, searchParams }: EntryPageProps) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const entry = await getFormEntry(resolvedParams.id);
+  const [entry, session, comments] = await Promise.all([
+    getFormEntry(resolvedParams.id),
+    auth(),
+    getComments(resolvedParams.id),
+  ]);
   const isOwner = await isEntryOwner(resolvedParams.id);
 
   if (!entry) {
@@ -166,6 +173,14 @@ export default async function EntryPage({ params, searchParams }: EntryPageProps
 
           {/* Suggestions */}
           <SuggestionsPanel entry={entry} />
+
+          {/* Comments */}
+          <CommentsSection
+            entryId={entry.id}
+            comments={comments}
+            currentUserId={session?.user?.id}
+            postOwnerId={entry.userId}
+          />
         </>
       )}
     </div>
