@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { signIn, signOut } from "@/lib/auth";
+import { sendWelcomeEmail } from "@/lib/email";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { redirect } from "next/navigation";
@@ -69,12 +70,20 @@ export async function register(
   const passwordHash = await bcrypt.hash(password, 12);
 
   // Create user
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       name: name || null,
       email: normalizedEmail,
       passwordHash,
     },
+  });
+
+  // Send welcome email (don't block registration if it fails)
+  sendWelcomeEmail({
+    email: user.email,
+    name: user.name,
+  }).catch((err) => {
+    console.error("Failed to send welcome email:", err);
   });
 
   // Sign in the user after registration
