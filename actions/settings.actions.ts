@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { sendPasswordChangedEmail } from "@/lib/email";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
@@ -252,6 +253,14 @@ export async function updatePassword(
   await prisma.user.update({
     where: { id: user.id },
     data: { passwordHash: newPasswordHash },
+  });
+
+  // Send password changed notification email (don't block if it fails)
+  sendPasswordChangedEmail({
+    email: userData.email,
+    name: userData.name,
+  }).catch((err) => {
+    console.error("Failed to send password changed email:", err);
   });
 
   return {
