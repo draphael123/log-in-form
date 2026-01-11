@@ -94,8 +94,19 @@ export default async function HomePage() {
           </div>
         </div>
 
+        {/* Feedback link */}
+        <div className="pt-6 slide-up" style={{ animationDelay: '0.7s' }}>
+          <Link
+            href="/feedback"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-purple-500 transition-colors group"
+          >
+            <span className="group-hover:scale-125 transition-transform">💬</span>
+            Got feedback? We&apos;d love to hear from you!
+          </Link>
+        </div>
+
         {/* Fun footer */}
-        <div className="pt-8 slide-up" style={{ animationDelay: '0.8s' }}>
+        <div className="pt-4 slide-up" style={{ animationDelay: '0.8s' }}>
           <p className="text-sm text-muted-foreground">
             Made with <span className="text-red-500 animate-pulse">❤️</span> using Next.js, Tailwind & Prisma
           </p>

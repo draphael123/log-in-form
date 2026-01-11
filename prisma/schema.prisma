@@ -85,3 +85,14 @@ model FormEntry {
   @@index([userId])
 }
 
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String?
+  email     String
+  type      String   // "bug", "feature", "general", "praise"
+  message   String   @db.Text
+  rating    Int?     // 1-5 star rating
+  createdAt DateTime @default(now())
+}
+

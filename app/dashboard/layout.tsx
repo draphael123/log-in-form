@@ -55,6 +55,12 @@ export default async function DashboardLayout({
                 >
                   Settings
                 </Link>
+                <Link
+                  href="/feedback"
+                  className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <span>💬</span> Feedback
+                </Link>
               </nav>
             </div>
             <div className="flex items-center gap-2">
