@@ -15,7 +15,7 @@ export function BookmarkButton({ entryId, initialBookmarked }: BookmarkButtonPro
   const handleClick = () => {
     startTransition(async () => {
       const result = await toggleBookmark(entryId);
-      if (result.success) {
+      if (result.success && result.bookmarked !== undefined) {
         setBookmarked(result.bookmarked);
       }
     });

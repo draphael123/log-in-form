@@ -15,7 +15,7 @@ export function FollowButton({ targetUserId, isFollowing: initialFollowing }: Fo
   const handleClick = () => {
     startTransition(async () => {
       const result = await toggleFollow(targetUserId);
-      if (result.success) {
+      if (result.success && result.following !== undefined) {
         setIsFollowing(result.following);
       }
     });

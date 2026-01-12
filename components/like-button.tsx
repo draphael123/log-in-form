@@ -25,7 +25,7 @@ export function LikeButton({
   const handleClick = () => {
     startTransition(async () => {
       const result = await toggleLike(entryId, commentId);
-      if (result.success) {
+      if (result.success && result.liked !== undefined) {
         setLiked(result.liked);
         setCount((prev) => (result.liked ? prev + 1 : prev - 1));
       }
