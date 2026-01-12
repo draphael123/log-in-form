@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth, getCurrentUser } from "@/lib/auth";
+import { checkAndAwardBadges } from "@/actions/badge.actions";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -59,6 +60,9 @@ export async function createFormEntry(
       category: parsed.data.category,
     },
   });
+
+  // Check for badges
+  checkAndAwardBadges(user.id!).catch(console.error);
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/feed");
@@ -165,6 +169,12 @@ export async function deleteFormEntry(entryId: string): Promise<FormState> {
 export async function getFormEntry(entryId: string) {
   await requireAuth();
 
+  // Increment view count
+  await prisma.formEntry.update({
+    where: { id: entryId },
+    data: { viewCount: { increment: 1 } },
+  }).catch(() => {}); // Ignore if not found
+
   // Any logged-in user can view any entry
   const entry = await prisma.formEntry.findUnique({
     where: { id: entryId },
@@ -174,6 +184,14 @@ export async function getFormEntry(entryId: string) {
           id: true,
           name: true,
           email: true,
+          reputation: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+          bookmarks: true,
         },
       },
     },
@@ -182,12 +200,42 @@ export async function getFormEntry(entryId: string) {
   return entry;
 }
 
+export async function togglePinEntry(entryId: string) {
+  const user = await requireAuth();
+
+  const entry = await prisma.formEntry.findUnique({
+    where: { id: entryId },
+  });
+
+  if (!entry || entry.userId !== user.id) {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  await prisma.formEntry.update({
+    where: { id: entryId },
+    data: { isPinned: !entry.isPinned },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/profile/${user.id}`);
+
+  return { success: true, isPinned: !entry.isPinned };
+}
+
 export async function getUserFormEntries() {
   const user = await requireAuth();
 
   const entries = await prisma.formEntry.findMany({
     where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+    include: {
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
+    },
   });
 
   return entries;
@@ -198,13 +246,19 @@ export async function getAllFormEntries() {
   await requireAuth();
 
   const entries = await prisma.formEntry.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
     include: {
       user: {
         select: {
           id: true,
           name: true,
           email: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
         },
       },
     },

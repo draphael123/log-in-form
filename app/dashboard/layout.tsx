@@ -2,6 +2,9 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
+import { NotificationsDropdown } from "@/components/notifications-dropdown";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { getUnreadCount } from "@/actions/notification.actions";
 
 export default async function DashboardLayout({
   children,
@@ -13,6 +16,8 @@ export default async function DashboardLayout({
   if (!session?.user) {
     redirect("/login");
   }
+
+  const unreadCount = await getUnreadCount();
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +47,7 @@ export default async function DashboardLayout({
               </Link>
 
               {/* Navigation */}
-              <nav className="hidden sm:flex items-center gap-1">
+              <nav className="hidden md:flex items-center gap-1">
                 <Link
                   href="/dashboard"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
@@ -53,27 +58,42 @@ export default async function DashboardLayout({
                   href="/dashboard/feed"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors flex items-center gap-1"
                 >
-                  <span>🌍</span> Public Feed
+                  🌍 Feed
                 </Link>
                 <Link
-                  href="/dashboard/settings"
-                  className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
-                >
-                  Settings
-                </Link>
-                <Link
-                  href="/feedback"
+                  href="/dashboard/leaderboard"
                   className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors flex items-center gap-1"
                 >
-                  <span>💬</span> Feedback
+                  🏆 Leaderboard
+                </Link>
+                <Link
+                  href="/dashboard/bookmarks"
+                  className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  🔖 Saved
                 </Link>
               </nav>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Mobile Settings Link */}
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <NotificationsDropdown initialCount={unreadCount} />
+              
+              {/* Profile Link */}
+              <Link
+                href={`/profile/${session.user.id}`}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                title="Profile"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="8" r="5" />
+                  <path d="M20 21a8 8 0 1 0-16 0" />
+                </svg>
+              </Link>
+
+              {/* Settings Link */}
               <Link
                 href="/dashboard/settings"
-                className="sm:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
                 title="Settings"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -82,7 +102,7 @@ export default async function DashboardLayout({
                 </svg>
               </Link>
 
-              <span className="text-sm text-muted-foreground hidden md:block px-3 py-1.5 rounded-full bg-muted/50">
+              <span className="text-sm text-muted-foreground hidden lg:block px-3 py-1.5 rounded-full bg-muted/50">
                 {session.user.name || session.user.email}
               </span>
               <LogoutButton />
